@@ -1,0 +1,86 @@
+import std.stdio;
+import std.math;
+import std.conv;
+import std.bigint;
+
+struct Container {
+  uint D;
+  long y = 0;
+  long lhs;
+  long x = 1;
+  BigInt lhsbig;
+  BigInt ybig;
+  BigInt xbig;
+  BigInt rhsbig;
+  BigInt Dbig;
+  bool big = false;
+  @property
+  bool Finished() {
+    if (big) {
+      return rhsbig == lhsbig;
+    } else {
+      return x * x == lhs;
+    }
+  }
+  this(uint D) {
+    this.D = D;
+    Dbig = D;
+  }
+  void Increment() {
+    if (!big) {
+      x++;
+      if (x * x > lhs) {
+        y++;
+        lhs = y * y * D + 1;
+        if (lhs < 0) {
+          big = true;
+          ybig = y - 1;
+          lhsbig = ybig * ybig * Dbig + 1;
+          xbig = x;
+          rhsbig = xbig * xbig;
+        }
+      }
+    }
+    if (big) {
+      xbig += 1;
+      rhsbig += xbig * BigInt(2) - 1;
+      if (rhsbig > lhsbig) {
+        ybig += 1;
+        lhsbig = ybig * ybig * Dbig + 1;
+      }
+    }
+  }
+}
+
+void main() {
+  Container[] remaining;
+  remaining.length = 2;
+  foreach (D; 2..1001) {
+    if (sqrt(cast(real)D) == round(sqrt(cast(real)D))) continue;
+    remaining ~= Container(D);
+  }
+  int[] removal;
+  int n = 0;
+  while (remaining.length > 3) {
+    removal = [];
+    foreach (i, ref c; remaining) {
+      if (i < 2) continue;
+      c.Increment();
+      if (c.Finished) removal ~= cast(int)i;
+    }
+    n++;
+    if (removal.length > 0) {
+      foreach (i; removal) {
+        writef("%s ", remaining[i].D);
+      }
+      writeln(":", remaining.length);
+    }
+    if (n % 100_000 == 0) writeln(n);
+    int removed = 0;
+    foreach (r; removal) {
+      remaining = remaining[0..r - removed] ~ remaining[r - removed + 1..$];
+      removed++;
+    }
+  }
+  writeln(remaining[2].D);
+}
