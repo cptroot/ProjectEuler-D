@@ -55,3 +55,10 @@ int[] Divisors(int[] sieve, int[] hash, int input) {
   }
   return divisors;
 }
+
+int NumDivisors(int[] primes, int input) {
+  int[] divisors = Divisors(primes, input);
+  
+  int total = reduce!( (a, b) { return a * (b + 1); })(1, divisors);
+  return total;
+}
