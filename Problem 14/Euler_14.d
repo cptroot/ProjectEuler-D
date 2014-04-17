@@ -3,51 +3,40 @@ import std.conv;
 
 
 void main() {
-  long[] lengths = new long[1_000_000];
-  lengths[0] = 1;
-  long FindLength(long n) {
-    if (n == 1) {
-      return 1;
-    }
-    n--;
-    if (lengths.length <= n) {
-      n++;
-      if (n % 2 == 0) {
-        return FindLength(n / 2) + 1;
-      }
-      else {
-        return FindLength(3 * n + 1) + 1;
-      }
-    }
-    else {
-      int index = to!int(n);
-      if (lengths[index] != 0) {
-        return lengths[index];
-      }
-      index++;
-      n++;
-      if (n % 2 == 0) {
-        lengths[index - 1] = FindLength(n / 2) + 1;
-      }
-      else {
-        lengths[index - 1] = FindLength(3 * n + 1) + 1;
-      }
-      return lengths[index - 1];
-    }
-  }
   long maxLength = 0;
   int maxNum = 1;
-  for (int i = 0; i < 1_000_000; i++) {
-    if (lengths.length > i)
-      if (lengths[i] != 0) { continue; }
-    FindLength(i + 1);
-    if (maxLength < lengths[i]) {
-      maxLength = lengths[i];
-      maxNum = i + 1;
+  int temp;
+  for (int i = 1; i <= 1_000_000; i++) {
+    temp = memoizedCollatz(i);
+    if (maxLength < temp) {
+      maxLength = temp;
+      maxNum = i;
     }
   }
   writeln(maxNum);
-  /*foreach (i, v; lengths) {
-    writeln(i + 1, ": ", v);
-  }*/
+}
+
+int memoizedCollatz(long n) {
+  static int[1_000_000] memo;
+  static bool init = false;
+  if (!init) {
+    memo[1] = 1;
+    init = true;
+  }
+  
+  if (n >= 1_000_000) {
+    long next = 0;
+    if (n % 2 == 0) next = n / 2;
+    else next = 3 * n + 1;
+    return memoizedCollatz(next) + 1;
+  }
+  
+  if (memo[n] != long.init) return memo[n];
+  
+  long next = 0;
+  if (n % 2 == 0) next = n / 2;
+  else next = 3 * n + 1;
+  
+  memo[n] = memoizedCollatz(next) + 1;
+  return memo[n];
 }
