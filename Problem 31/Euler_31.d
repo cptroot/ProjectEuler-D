@@ -1,40 +1,36 @@
 import std.stdio;
+import std.algorithm;
+
+immutable int[8] coin_values = [1, 2, 5, 10, 20, 50, 100, 200];
 
 void main() {
   int sum = 0;
   int total = 0;
-  foreach (p1; 0..201) {
-    sum += p1;
-    foreach (p2; 0..(200 - sum) / 2 + 1) {
-      sum += p2*2;
-      foreach (p5; 0..(200 - sum) / 5 + 1) {
-        sum += p5 * 5;
-        foreach (p10; 0..(200 - sum) / 10 + 1) {
-          sum += p10 * 10;
-          foreach (p20; 0..(200 - sum) / 20 + 1) {
-            sum += p20 * 20;
-            foreach (p50; 0..(200 - sum) / 50 + 1) {
-              sum += p50 * 50;
-              foreach (p100; 0..(200 - sum) / 100 + 1) {
-                sum += p100 * 100;
-                foreach (p200; 0..(200 - sum) / 200 + 1) {
-                  sum += p200 * 200;
-                  if (sum == 200) total++;
-                  sum -= p200 * 200;
-                }
-                sum -= p100 * 100;
-              }
-              sum -= p50 * 50;
-            }
-            sum -= p20 * 20;
-          }
-          sum -= p10 * 10;
+  
+  int[9] coin_counts;
+  
+  while (coin_counts[8] == 0) {
+    int value = calculate_value(coin_counts);
+    if (value == 200) total++;
+    if (value >= 200) {
+      for (int i = 0; i < 8; i++) {
+        if (coin_counts[i] > 0) {
+          coin_counts[i] = 0;
+          coin_counts[i + 1]++;
+          break;
         }
-        sum -= p5 * 5;
       }
-      sum -= p2 * 2;
+    } else {
+      coin_counts[0]++;
     }
-    sum -= p1;
   }
   writeln(total);
+}
+
+int calculate_value(int[] coin_counts) {
+  int result = 0;
+  for (int i = 0; i < 8; i++) {
+    result += coin_values[i] * coin_counts[i];
+  }
+  return result;
 }
