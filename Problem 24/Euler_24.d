@@ -1,5 +1,5 @@
 import std.stdio;
-import std.math;
+import std.mathspecial;
 import std.conv;
 
 void main() {
@@ -12,13 +12,13 @@ void main() {
     index = 0;
     long factorial = 1;
     if (remaining.length > 0)
-      factorial = to!long(tgamma(remaining.length));
-    writeln(factorial, " ", sum, " ", remaining.length);
+      factorial = to!long(gamma(remaining.length));
+    debug writeln(factorial, " ", sum, " ", remaining.length);
     while (sum >= factorial) {
       sum -= factorial;
       index++;
     }
-    writeln(index);
+    debug writeln(index);
     result *= 10;
     result += remaining[index];
     remaining = remaining[0..index] ~ remaining[(index + 1)..$];
